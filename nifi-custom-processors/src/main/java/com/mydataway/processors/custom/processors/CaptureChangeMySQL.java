@@ -617,7 +617,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
             currentSequenceId.set(Long.parseLong(seqIdString));
         }
         //add by wfs:get inTransaction value from state
-        inTransaction = "true".equals(stateMap.get("inTransaction")) ? true : false;
+        inTransaction = "true".equals(stateMap.get("inTransaction"));
         //add end
 
 
@@ -989,11 +989,6 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
                     break;
 
                 case XID:
-                    //xid表示：事务的结尾
-                    //续上继续运行的时候会遇到xid事件，此时未处于事务中
-                    //1.标记运行情况，断续的时候跳过此数据
-                    //2.直接不处理此类数据：后续无法将inTransaction = false;
-                    //3.上次处理完成后需要往后移动标记，否则断续运行即会取到xid
                     if (!inTransaction) {
                         throw new IOException("COMMIT event received while not processing a transaction (i.e. no corresponding BEGIN event). "
                                 + "This could indicate that your binlog position is invalid.");
@@ -1091,7 +1086,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
             // Advance the current binlog position. This way if no more events are received and the processor is stopped, it will resume after the event that was just processed.
             // We always get ROTATE and FORMAT_DESCRIPTION messages no matter where we start (even from the end), and they won't have the correct "next position" value, so only
             // advance the position if it is not that type of event.
-            if (eventType != ROTATE && eventType != FORMAT_DESCRIPTION && !useGtid && eventType !=XID) {
+            if (eventType != ROTATE && eventType != FORMAT_DESCRIPTION && !useGtid && eventType != XID) {
                 currentBinlogPosition = header.getNextPosition();
             }
         }
@@ -1136,7 +1131,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
     }
 
     private void updateState(ProcessSession session) throws IOException {
-        updateState(session, currentBinlogFile, currentBinlogPosition, currentSequenceId.get(), currentGtidSet,inTransaction);
+        updateState(session, currentBinlogFile, currentBinlogPosition, currentSequenceId.get(), currentGtidSet, inTransaction);
     }
 
     private void updateState(ProcessSession session, String binlogFile, long binlogPosition, long sequenceId, String gtidSet,boolean inTransaction) throws IOException {
@@ -1151,7 +1146,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
         newStateMap.put(BinlogEventInfo.BINLOG_POSITION_KEY, Long.toString(binlogPosition));
         newStateMap.put(EventWriter.SEQUENCE_ID_KEY, String.valueOf(sequenceId));
         //add by wfs:add inTransaction value into state
-        newStateMap.put("inTransaction",inTransaction?"true":"false");
+        newStateMap.put("inTransaction", inTransaction ? "true" : "false");
         //add end
 
 

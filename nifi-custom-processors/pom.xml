@@ -86,5 +86,16 @@
             <version>${nifi.groovy.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-mock</artifactId>
+            <version>1.15.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-distributed-cache-client-service</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
