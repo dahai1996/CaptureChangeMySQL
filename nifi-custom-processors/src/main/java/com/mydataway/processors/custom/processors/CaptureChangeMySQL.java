@@ -1136,6 +1136,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
 
     private void updateState(ProcessSession session, String binlogFile, long binlogPosition, long sequenceId, String gtidSet,boolean inTransaction) throws IOException {
         // Update state with latest values
+        System.out.println("Updating state with: " + binlogFile + ":" + binlogPosition + ":" + sequenceId + ":" + gtidSet + ":" + inTransaction);
         final Map<String, String> newStateMap = new HashMap<>(session.getState(Scope.CLUSTER).toMap());
 
         // Save current binlog filename, position and GTID to the state map
@@ -1180,7 +1181,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
     }
 
 
-    BinaryLogClient createBinlogClient(String hostname, int port, String username, String password) {
+    protected BinaryLogClient createBinlogClient(String hostname, int port, String username, String password) {
         return new BinaryLogClient(hostname, port, username, password);
     }
 
@@ -1190,7 +1191,7 @@ public class CaptureChangeMySQL extends AbstractSessionFactoryProcessor {
      * @param key A TableInfoCacheKey reference, which contains the database and table names
      * @return A TableInfo instance with the ColumnDefinitions provided (if retrieved successfully from the database)
      */
-    public TableInfo loadTableInfo(TableInfoCacheKey key) throws SQLException {
+    protected TableInfo loadTableInfo(TableInfoCacheKey key) throws SQLException {
         TableInfo tableInfo = null;
         if (jdbcConnectionHolder != null) {
 

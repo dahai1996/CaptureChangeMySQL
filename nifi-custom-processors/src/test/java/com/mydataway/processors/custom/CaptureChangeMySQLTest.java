@@ -126,6 +126,8 @@ public class CaptureChangeMySQLTest {
         EventData eventData = new EventData() {
         };
         client.sendEvent(new Event(header2, eventData));
+
+        // when we ge a xid event without having got a 'begin' event ,throw an exception
         try {
             testRunner.run(1, false, false);
         } catch (AssertionError e) {
@@ -163,7 +165,7 @@ public class CaptureChangeMySQLTest {
         // BEGIN
         EventHeaderV4 header1 = new EventHeaderV4();
         header1.setEventType(EventType.QUERY);
-        header1.setNextPosition(4);
+        header1.setNextPosition(6);
         header1.setTimestamp(new Date().getTime());
         QueryEventData rotateEventData1 = new QueryEventData();
         rotateEventData1.setDatabase("mysql-bin.000001");
@@ -172,20 +174,24 @@ public class CaptureChangeMySQLTest {
         client.sendEvent(new Event(header1, rotateEventData1));
 
         // COMMIT
-        EventHeaderV4 header0 = new EventHeaderV4();
-        header0.setEventType(EventType.XID);
-        header0.setNextPosition(12);
-        header0.setTimestamp(new Date().getTime());
-        EventData eventData0 = new EventData() {
+        EventHeaderV4 header2 = new EventHeaderV4();
+        header2.setEventType(EventType.XID);
+        header2.setNextPosition(12);
+        header2.setTimestamp(new Date().getTime());
+        EventData eventData2 = new EventData() {
         };
-        client.sendEvent(new Event(header0, eventData0));
+        client.sendEvent(new Event(header2, eventData2));
 
+        //when get a xid event,stop and restart the processor
+        //here we used to get an exception
+        testRunner.run(1, true, false);
+        testRunner.run(1, false, false);
 
         // next transaction
         // BEGIN
         EventHeaderV4 header3 = new EventHeaderV4();
         header3.setEventType(EventType.QUERY);
-        header3.setNextPosition(4);
+        header3.setNextPosition(16);
         header3.setTimestamp(new Date().getTime());
         QueryEventData rotateEventData3 = new QueryEventData();
         rotateEventData3.setDatabase("mysql-bin.000001");
