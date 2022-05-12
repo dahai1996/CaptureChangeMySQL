@@ -2,7 +2,12 @@ package com.mydataway.processors.custom;
 
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
-import com.github.shyiko.mysql.binlog.event.*;
+import com.github.shyiko.mysql.binlog.event.Event;
+import com.github.shyiko.mysql.binlog.event.EventData;
+import com.github.shyiko.mysql.binlog.event.EventHeaderV4;
+import com.github.shyiko.mysql.binlog.event.EventType;
+import com.github.shyiko.mysql.binlog.event.QueryEventData;
+import com.github.shyiko.mysql.binlog.event.RotateEventData;
 import com.github.shyiko.mysql.binlog.network.SSLMode;
 import com.mydataway.processors.custom.processors.CaptureChangeMySQL;
 import org.apache.commons.io.output.WriterOutputStream;
@@ -33,11 +38,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -128,12 +138,7 @@ public class CaptureChangeMySQLTest {
         client.sendEvent(new Event(header2, eventData));
 
         // when we ge a xid event without having got a 'begin' event ,throw an exception
-        try {
-            testRunner.run(1, false, false);
-        } catch (AssertionError e) {
-            assertEquals("org.apache.nifi.processor.exception.ProcessException: java.io.IOException: COMMIT event received while not processing a transaction (i.e. no corresponding BEGIN event). This could indicate that your binlog position is invalid.", e.getMessage());
-        }
-
+        assertThrows(AssertionError.class, () -> testRunner.run(1, false, false));
     }
 
     @Test
