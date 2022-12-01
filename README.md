@@ -8,9 +8,12 @@ CaptureChangeMySQL：
 
 nifi版本：1.15.2
 
-github地址：https://github.com/dahai1996/CaptureChangeMySQL
+## 官方已修复
 
-博客地址：https://www.cnblogs.com/sqhhh/p/15842304.html
+官方已经合并代码,见: https://github.com/apache/nifi/pull/6036
+
+具体在哪个版本修复,见标签代码
+
 ---
 
 ## 配置
