@@ -8,11 +8,11 @@ CaptureChangeMySQL：
 
 nifi版本：1.15.2
 
-## 官方已修复
+## 官方已修复 !!
 
 官方已经合并代码,见: https://github.com/apache/nifi/pull/6036
 
-具体在哪个版本修复,见标签代码
+1.19版本已合并该代码
 
 ---
 
